@@ -1,0 +1,288 @@
+<section class="content" *ngIf="!(addStore || editStore)">
+  <div class="row">
+    <h3 class="pull-left"> {{'Stores' | translate}}</h3>
+    <div class="breadcrumb pull-right">
+      <div class="container-fluid">
+        <div class="row">
+          <ol class="breadcrumb">
+            <li>
+              <i class="fa fa-home" aria-hidden="true"></i>
+            </li>
+            <li class="active">
+              <span>{{'Stores' | translate}}</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box">
+    <div class="box-header">     
+      <div class="row pull-right">
+        <button class="btn btn-primary mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="!isFiltersEnabled && storesList.length>0 ">
+          <i class="fa fa-filter" aria-hidden="true"></i>
+          &nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;
+        <button class="btn btn-warning mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="isFiltersEnabled && storesList.length>0">
+          <i class="fa fa-filter" aria-hidden="true"></i>&nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;      
+        <button class="btn btn-primary mt-3 mb-0" (click)="onAddStoreClick()" *ngIf="userActivityRights.CanManageStores">{{'Add Store'|translate}}</button>&nbsp;&nbsp;
+      </div>
+      <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-clip-rotate">
+        <p style="font-size: 20px; color: white">Loading Please Wait...</p>
+      </ngx-spinner>
+    </div>
+    <div class="box-body">
+      <div class="table-responsive table-md mb-3">
+        <p-table #sr [value]="storesList" [paginator]="true" [rows]="10" sortMode="single" >
+          <ng-template pTemplate="header">
+            <tr>
+              <!-- <th style="width: 100px;">{{'Store Image' | translate}}</th> -->
+              <th [pSortableColumn]="'Name1'">{{'Name' | translate}}
+                <p-sortIcon [field]="Name1"></p-sortIcon>
+              </th>             
+              <th [pSortableColumn]="'FullAddress'">{{'Address' | translate}}
+                <p-sortIcon [field]="FullAddress"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'CityName'"  style="width: 150px">{{'City Name' | translate}}
+                <p-sortIcon [field]="CityName"></p-sortIcon>
+              </th> 
+               <th style="width: 80px;">{{'Actions'|translate}}</th>             
+            </tr>
+            <tr *ngIf="isFiltersEnabled">
+              <!-- <th></th>            -->
+              <th>
+                <input type="text" class="form-control"
+                  (input)="sr.filter($event.target.value, 'Name1', 'contains')">
+              </th>            
+              <th>
+                <input type="text" class="form-control"
+                  (input)="sr.filter($event.target.value, 'FullAddress', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="sr.filter($event.target.value, 'CityName', 'contains')">
+              </th>
+              <th></th>             
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-store >
+            <tr>
+              <!-- <td align="center" style="width: 100px;">
+                <img *ngIf="store.Filepath != null" src="{{store.Filepath}}" class="profile-image" style="width: 40px; height: 30px;"
+                  (click)="onStoreImage(store.Filepath)" class="img-responsive"
+                  style="width: 40px; height: 30px;" />
+                  <img *ngIf="store.Filepath == null" src="assets/img/alsadhan-logo-icon.png" class="profile-image" style="width: 40px; height: 30px;"
+                  (click)="onStoreImage(store.Filepath)" class="img-responsive"
+                  style="width: 40px; height: 30px;" />
+              </td> -->
+              <td>{{store.Name1}}</td>                      
+              <td>{{store.FullAddress}}</td>  
+              <td>{{store.CityName}}</td>
+              <td style="width: 80px !important;" class="text-center">
+                <button type="button" class="btn btn-primary btn-xs" title="{{'Edit'|translate}}" data-toggle="tooltip" (click)="onEditStore(store)" *ngIf="userActivityRights.CanManageStores">
+                <i class="fa fa-edit"></i></button>
+              </td>           
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+              <td colspan="4" class="ui-datatable-emptymessage text-center">{{'No Records Found' | translate}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content" *ngIf="addStore">
+  <div class="box">
+    <div class="box-header">
+        <h3 class="box-title">{{'Add Store' | translate}}</h3>
+    </div>
+    <div class="box-body">
+      <form [formGroup]="addStoreForm">
+       <div class="row">
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Store Name 1 (In English)' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="name1" id="exampleInputEmail1" placeholder="{{'Store Name 1' | translate}}">
+            <div *ngIf="!addStoreForm.controls.name1.valid && addStoreForm.controls.name1.touched" class="text-red">
+              <div *ngIf="addStoreForm.get('name1').errors.required"> {{'Name 1 is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Store Name 2 (In Arabic)' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="name2" id="exampleInputEmail1" placeholder="{{'Store Name 2' | translate}}">
+            <div *ngIf="!addStoreForm.controls.name2.valid && addStoreForm.controls.name2.touched" class="text-red">
+              <div *ngIf="addStoreForm.get('name2').errors.required"> {{'Name 2 is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Address' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="address" id="exampleInputEmail1" placeholder="{{'Address' | translate}}">
+            <div *ngIf="!addStoreForm.controls.address.valid && addStoreForm.controls.address.touched" class="text-red">
+              <div *ngIf="addStoreForm.get('address').errors.required"> {{'Address is required' | translate}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Landmark' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="landmark" id="exampleInputEmail1" placeholder="{{'Landmark' | translate}}">
+            <div *ngIf="!addStoreForm.controls.landmark.valid && addStoreForm.controls.landmark.touched" class="text-red">
+              <div *ngIf="addStoreForm.get('landmark').errors.required"> {{'Landmark is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'City' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="city" id="exampleInputEmail1" placeholder="{{'City' | translate}}">
+            <div *ngIf="!addStoreForm.controls.city.valid && addStoreForm.controls.city.touched" class="text-red">
+              <div *ngIf="addStoreForm.get('city').errors.required"> {{'City is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Postel Code' | translate}}  <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="postelCode" id="exampleInputEmail1" placeholder="{{'Postel Code' | translate}}">
+            <div *ngIf="!addStoreForm.controls.postelCode.valid && addStoreForm.controls.postelCode.touched" class="text-red">
+              <div *ngIf="addStoreForm.get('postelCode').errors.required"> {{'Postel Code is required' | translate}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">      
+          <div class="form-group col-md-4 mat-form-field">
+            <label for="file">{{'Store Image' | translate}} <span class="text-red">*</span> </label>
+            <input #fileInput type="file" class="form-control" id="file" formControlName="file" (change)="onSelectFiles($event)">
+            <div *ngIf="!addStoreForm.controls.file.valid && addStoreForm.controls.file.touched" class="text-red">
+              <div *ngIf="addStoreForm.get('file').errors.required"> {{'Store Image is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group col-md-4 mat-form-field" *ngIf="image !=null">
+            <div class="file-uploded">
+              <a target="_blank">
+                <img [src]="image" class="img-responsive box-shadow " style="height:150px;">
+              </a>
+            </div>
+          </div>
+        <!-- <div *ngIf="image != null">
+          <div class="box-shadow file-uploded">
+            <a target="_blank">
+              <img [src]="image" class="img-fluid" style="height:150px;">
+            </a>
+          </div>
+        </div> -->
+        </div>
+      
+        <div class="clearfix"></div>
+        <div class="row pull-right">
+          <button type="button" class="btn btn-danger" (click)="onCancelAddStore()"> {{'Cancel' | translate}}</button>&nbsp;
+          <button type="button" class="btn btn-success" (click)="onSaveAddStore()" [disabled]="!addStoreForm.valid || !validfile" >{{'Save' | translate}}</button>&nbsp;&nbsp;
+      </div>
+      </form>
+    </div>
+  </div>
+  </section>
+  <section class="content" *ngIf="editStore">
+    <div class="box">
+      <div class="box-header">
+          <h3 class="box-title">{{'Edit Store' | translate}}</h3>
+      </div>
+      <div class="box-body">
+        <form [formGroup]="editStoreForm">
+         <div class="row">
+            <div class="form-group col-md-4">
+              <label for="exampleInputEmail1">{{'Store Name 1 (In English)' | translate}} <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="name1" id="exampleInputEmail1"
+               placeholder="{{'Store Name 1' | translate}}" [ngModel]="storeEdit?.Name1">
+              <div *ngIf="!editStoreForm.controls.name1.valid && editStoreForm.controls.name1.touched" class="text-red">
+                <div *ngIf="editStoreForm.get('name1').errors.required"> {{'Name 1 is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="exampleInputEmail1">{{'Store Name 2 (In Arabic)' | translate}} <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="name2" id="exampleInputEmail1"
+               placeholder="{{'Store Name 2' | translate}}" [ngModel]="storeEdit?.Name2">
+              <div *ngIf="!editStoreForm.controls.name2.valid && editStoreForm.controls.name2.touched" class="text-red">
+                <div *ngIf="editStoreForm.get('name2').errors.required"> {{'Name 2 is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="exampleInputEmail1">{{'Address' | translate}} <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="address" id="exampleInputEmail1"
+               placeholder="{{'Address' | translate}}" [ngModel]="storeEdit?.FullAddress">
+              <div *ngIf="!editStoreForm.controls.address.valid && editStoreForm.controls.address.touched" class="text-red">
+                <div *ngIf="editStoreForm.get('address').errors.required"> {{'Address is required' | translate}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label for="exampleInputEmail1">{{'Landmark' | translate}} <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="landmark" id="exampleInputEmail1"      
+                                     
+              
+              placeholder="{{'Landmark' | translate}}"[ngModel]="storeEdit.Landmark=='NULL'?'':storeEdit.Landmark" >
+              <div *ngIf="!editStoreForm.controls.landmark.valid && editStoreForm.controls.landmark.touched" class="text-red">
+                <div *ngIf="editStoreForm.get('landmark').errors.required"> {{'Landmark is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="exampleInputEmail1">{{'City' | translate}} <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="city" id="exampleInputEmail1"
+               placeholder="{{'City' | translate}}" [ngModel]="storeEdit?.CityName">
+              <div *ngIf="!editStoreForm.controls.city.valid && editStoreForm.controls.city.touched" class="text-red">
+                <div *ngIf="editStoreForm.get('city').errors.required"> {{'City is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label for="exampleInputEmail1">{{'Postel Code' | translate}}  <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="postelCode" id="exampleInputEmail1"
+               placeholder="{{'Postel Code' | translate}}" [ngModel]="storeEdit?.PostalCode">
+              <div *ngIf="!editStoreForm.controls.postelCode.valid && editStoreForm.controls.postelCode.touched" class="text-red">
+                <div *ngIf="editStoreForm.get('postelCode').errors.required"> {{'Postel Code is required' | translate}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">     
+            <div class="form-group col-md-4 mat-form-field">
+              <label for="file">{{'Store Image'|translate}} <span class="text-red">*</span> </label>
+              <input #fileInput1 type="file" class="form-control" id="file" formControlName="file"
+                (change)="onEditSelectFiles($event)">
+              <div *ngIf="!editStoreForm.controls.file.valid && editStoreForm.controls.file.touched" class="text-red">
+                <div *ngIf="editStoreForm.get('file').errors.required"> {{'Store Image is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group col-md-4 mat-form-field" *ngIf="image1 !=null">
+              <div class="file-uploded">
+                <a target="_blank">
+                  <img [src]="image1" class="img-responsive box-shadow " style="height:150px;">
+                </a>
+              </div>
+            </div>
+            <div class="form-group col-md-4 mat-form-field" *ngIf="image1 ==null && storeEdit.Filepath != null">
+              <div class="file-uploded">
+                <a target="_blank">
+                  <img [src]="storeEdit.Filepath" class="img-responsive box-shadow " style="height:150px;">
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="row pull-right">
+            <button type="button" class="btn btn-danger" (click)="onCancelEditStore()"> {{'Cancel' | translate}}</button>&nbsp;
+            <button type="button" class="btn btn-success" (click)="onUpDateStore()" [disabled]="!editStoreForm.valid ||! editStoreForm.dirty" >{{'Save' | translate}}</button>&nbsp;&nbsp;
+        </div>
+        </form>
+      </div>
+    </div>
+    </section>
+
+    <div>
+      <div id="storeModal" class="modal">
+        <span style="color: white;" class="close" (click)="closeImage()">&times;</span>
+        <img class="modal-content" [src]="modalImg" id="storeImage">
+        <div id="caption"></div>
+      </div>
+    </div>
+    

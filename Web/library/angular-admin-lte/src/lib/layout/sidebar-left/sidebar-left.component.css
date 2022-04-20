@@ -1,0 +1,25 @@
+.treeview-menu.collapse {
+  display: none;
+}
+
+.treeview-menu,
+.treeview-menu.collapse.in {
+  display: block;
+}
+.treeview-menu{
+  padding-left: 0px !important;
+}
+ul.treeview-menu li a{
+  padding: 8px 5px 8px 15px !important;
+}
+ul.treeview-menu li a.active{
+  background: #325563;
+  color: #fff;
+}
+ul.treeview-menu li:hover{
+  background: #325563;
+  color: #fff;
+}
+/* .skin-blue .sidebar-menu > li > .treeview-menu{
+
+} */

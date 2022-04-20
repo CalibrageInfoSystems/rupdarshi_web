@@ -1,0 +1,42 @@
+.login-page {
+    overflow: hidden;
+    min-height: 100vh;
+  }
+  
+  .login-box, .register-box {
+    /* width: 440px; */
+    margin: 12% auto;
+  }
+  @media (max-wdth:420px){
+    .login-box, .register-box {
+      width: 100% !important;
+      margin: 12% auto !important;
+      padding: 10px !important;
+    }
+  }
+  .login-box-body, .register-box-body {
+      background: #fff;
+      padding: 20px;
+      border-top: 0;
+      color: #666;
+      border-radius: 10px;
+  }
+  
+  .login-form-title {
+    display: block;
+    font-family: 'Varela', sans-serif;
+    font-size: 39px;
+    color: #333333;
+    line-height: 1.2;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .login-box-body .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .login-box-body .form-group .form-control {
+    height: 40px;
+    border-radius: 10px !important;
+  }

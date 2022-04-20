@@ -1,0 +1,270 @@
+<section class="content">
+    <div class="row">
+        <h3 class="pull-left"> {{'Roles' | translate}}</h3>
+        <div class="breadcrumb pull-right">
+          <div class="container-fluid">
+            <div class="row">
+              <ol class="breadcrumb">
+                <li>
+                  <i class="fa fa-home" aria-hidden="true"></i>
+                </li>
+                <li class="active">
+                  <span>{{'Roles' | translate}}</span>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>    
+  <div class="box">
+    <div class="box-header">
+      <!-- <h3 class="box-title">{{'Roles List' | translate}}</h3> -->
+      <div class="row pull-right">
+        <button class="btn btn-primary mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="!isFiltersEnabled && rolesList.length>0">
+          <i class="fa fa-filter" aria-hidden="true"></i>
+          &nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;
+        <button class="btn btn-warning mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="isFiltersEnabled && rolesList.length>0">
+          <i class="fa fa-filter" aria-hidden="true"></i>&nbsp;{{ filterTooltip | translate}} 
+        </button>&nbsp;&nbsp;
+        <button class="btn btn-primary mt-3 mb-0" data-toggle="modal" data-target="#addrole" (click)="onAddRole()" *ngIf="userActivityRights.CanManageRoles"> {{'Add Role' | translate}}</button>
+      </div>
+      <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-clip-rotate">
+          <p style="font-size: 20px; color: white">Loading Please Wait...</p>
+      </ngx-spinner>
+    </div>
+    <div class="box-body">
+      <div class="table-responsive table-sm mb-3">
+        <p-table #rs [value]="rolesList" [paginator]="true" [rows]="10" sortMode="single" rowExpandMode="single" expandableRows="true"
+        dataKey="Id">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem !important;"></th>
+              <th [pSortableColumn]="'Code'"> {{'Code' | translate}}
+                <p-sortIcon [field]="Code"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'NAME'"> {{'Name' | translate}}
+                <p-sortIcon [field]="NAME"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Desc'"> {{'Description' | translate}}
+                <p-sortIcon [field]="Desc"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'ParentRole'"> {{'Reported Role' | translate}}
+                <p-sortIcon [field]="ParentRole"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'IsActive'" style="width: 100px !important;"> {{'Active' | translate}}
+                <p-sortIcon [field]="IsActive"></p-sortIcon>
+              </th>
+              <th style="width: 80px;">{{'Actions' | translate}}</th>
+            </tr>
+            <tr *ngIf="isFiltersEnabled">
+              <th style="width: 3rem !important;"></th>
+              <th>
+                <input type="text" class="form-control" (input)="rs.filter($event.target.value, 'Code', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="rs.filter($event.target.value, 'NAME', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="rs.filter($event.target.value, 'Desc', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="rs.filter($event.target.value, 'ParentRole', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="rs.filter($event.target.value, 'IsActive', 'contains')">
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-role let-expanded="expanded">
+            <tr>
+              <td style="width: 3em !important">
+                <a [pRowToggler]="role"
+                  (click)="GetActivityRightsByRoleId(role,expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right')">
+                  <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                </a>
+              </td>
+              <td>{{role.Code}}</td>
+              <td>{{role.NAME}}</td>
+              <td>{{role.Desc}}</td>
+              <td>{{role.ParentRole}}</td>
+              <td style="width: 100px !important;">{{role.IsActive}}</td>
+              <td *ngIf="userActivityRights.CanManageRoles" style="width: 80px;" class="text-center">
+                <button type="button" class="btn btn-primary btn-xs" title="Edit" data-toggle="tooltip" data-toggle="modal" data-target="#editrole"
+                  (click)="onEditRole(role)">
+                  <i class="fa fa-edit"></i></button>
+                <!-- <button type="button" class="btn btn-danger btn-xs" title="Delete" data-toggle="tooltip"
+                  (click)="onDeleteRole(role)">
+                  <i class="fa fa-trash"></i></button>&nbsp; -->
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+              <tr>
+                  <td [attr.colspan]="7">
+                      <p-table #dt1 [responsive]="true" [value]="roleActivityRights" [rows]="5" [paginator]="true" [rowsPerPageOptions]="[5,10,15]">
+                          <ng-template pTemplate="header">
+                              <tr>
+                                  <th class="product-id" [pSortableColumn]="'Name'">Activity Rights
+                                      <p-sortIcon [field]="'Name'"></p-sortIcon>
+                                  </th>
+                                  <th class="product-id" [pSortableColumn]="'Desc'"> {{'Description' | translate}}
+                                    <p-sortIcon [field]="'Desc'"></p-sortIcon>
+                                </th>
+                              </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-expanded="expanded" let-rowdata>
+                              <tr>
+                                <td>{{rowdata.Name}}</td>
+                                <td>{{rowdata.Desc}}</td>
+                              </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage" let-columns>
+                              <tr *ngIf="roleActivityRights == 0">
+                                  <td colspan="2" class="ui-datatable-emptymessage text-center"> {{'No Records Found' | translate}}</td>
+                              </tr>
+                          </ng-template>
+                      </p-table>
+                  </td>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+              <td colspan="7" class="ui-datatable-emptymessage text-center">{{'No Records Found' | translate}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div class="modal fade" id="addrole">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onCancelAddRole()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"> {{'Add New Role' | translate}}</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="addroleForm">
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Name' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="roleName" id="exampleInputEmail1" placeholder="{{'Name' | translate}}">
+            <div *ngIf="!addroleForm.controls.roleName.valid && addroleForm.controls.roleName.touched" class="text-red">
+              <div *ngIf="addroleForm.get('roleName').errors.required"> {{'Role is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Reported Role' | translate}}</label>
+            <select class="form-control select2" formControlName="reportedRole" [(ngModel)]="reportedRole">
+                <option [value]=null selected="selected" disabled> {{'Please Select reported role' | translate}}</option>
+                <option [value]="role.Id" *ngFor="let role of reportingRolesList">{{role.NAME}}</option>
+              </select>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Code' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="code" id="exampleInputEmail1" placeholder="{{'Code' | translate}}">
+            <div *ngIf="!addroleForm.controls.code.valid && addroleForm.controls.code.touched" class="text-red">
+              <div *ngIf="addroleForm.get('code').errors.required"> {{'Code is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Description' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="description" id="exampleInputEmail1"
+              placeholder="{{'Description' | translate}}">
+            <div *ngIf="!addroleForm.controls.description.valid && addroleForm.controls.description.touched" class="text-red">
+              <div *ngIf="addroleForm.get('description').errors.required"> {{'Description is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group">
+              <label for="exampleInputEmail1"> {{'Select Activity Rights' | translate}} <span class="text-red">*</span></label>
+              <angular2-multiselect [data]="activityRightsListDropdowm" [(ngModel)]="selectedActivityRights" formControlName="activityrights" [settings]="dropdownSettings"></angular2-multiselect>   
+              <div *ngIf="!addroleForm.controls.activityrights.valid && addroleForm.controls.activityrights.touched" class="text-red">
+                <div *ngIf="addroleForm.get('activityrights').errors.required"> {{'Activity Rights is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" name="vehicle1" formControlName="isActive" value="isActive" checked >  {{'Is Active' | translate}}<br>
+              </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="row pull-right">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onCancelAddRole()"> {{'Cancel' | translate}}</button>&nbsp;
+            <button type="button" class="btn btn-success" (click)="onSaveRole()" [disabled]="!addroleForm.valid"> {{'Save' | translate}}</button>&nbsp;&nbsp;
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="editrole">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onCancelEditRole()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">{{'Edit Role' | translate}}</h4>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="editroleForm">
+            <div class="form-group">
+              <label for="exampleInputEmail1">{{'Name' | translate}} <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="roleName" id="exampleInputEmail1" placeholder="{{'Name' | translate}}" [(ngModel)]="rowEdit.NAME">
+              <div *ngIf="!editroleForm.controls.roleName.valid && editroleForm.controls.roleName.touched" class="text-red">
+                <div *ngIf="editroleForm.get('roleName').errors.required"> {{'Role is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1"> {{'Reported Role' | translate}}</label>
+              <select class="form-control select2" formControlName="reportedRole" [(ngModel)]="reportedRole">
+                  <option [value]=null selected="selected" disabled> {{'Please Select reported role' | translate}}</option>
+                  <option [value]="role.Id" *ngFor="let role of reportingRolesList">{{role.NAME}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1"> {{'Code' | translate}} <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="code" id="exampleInputEmail1" placeholder="{{'Code' | translate}}" [(ngModel)]="rowEdit.Code">
+              <div *ngIf="!editroleForm.controls.code.valid && editroleForm.controls.code.touched" class="text-red">
+                <div *ngIf="editroleForm.get('code').errors.required"> {{'Code is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputEmail1">{{'Description' | translate}} <span class="text-red">*</span></label>
+              <input type="text" class="form-control" formControlName="description" id="exampleInputEmail1" [(ngModel)]="rowEdit.Desc"
+                placeholder="{{'Description' | translate}}">
+              <div *ngIf="!editroleForm.controls.description.valid && editroleForm.controls.description.touched" class="text-red">
+                <div *ngIf="editroleForm.get('description').errors.required">{{'Description is required' | translate}}</div>
+              </div>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">{{'Select Activity Rights' | translate}} <span class="text-red">*</span></label>
+                <angular2-multiselect [data]="activityRightsListDropdowm" [(ngModel)]="selectedActivityRights" formControlName="activityrights" [settings]="dropdownSettings"></angular2-multiselect>   
+                <div *ngIf="!editroleForm.controls.activityrights.valid && editroleForm.controls.activityrights.touched" class="text-red">
+                  <div *ngIf="editroleForm.get('activityrights').errors.required"> {{'Activity Rights is required' | translate}}</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="checkbox" name="vehicle1" formControlName="IsActive" value="isActive" checked [(ngModel)]="rowEdit.IsActive">  {{'Is Active' | translate}}<br>
+              </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="row pull-right">
+              <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onCancelEditRole()"> {{'Cancel' | translate}}</button>&nbsp;
+              <button type="button" class="btn btn-success" (click)="onUpdateRole()" [disabled]="!editroleForm.valid || !editroleForm.dirty || selectedActivityRights.length==0"> {{'Update' | translate}}</button>&nbsp;&nbsp;
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,348 @@
+<section class="content" *ngIf="!addProduct && !editProduct">
+  <div class="row">
+    <h3 class="pull-left"> {{'Products' | translate}}</h3>
+    <div class="breadcrumb pull-right">
+      <div class="container-fluid">
+        <div class="row">
+          <ol class="breadcrumb">
+            <li>
+              <i class="fa fa-home" aria-hidden="true"></i>
+            </li>
+            <li class="active">
+              <span>{{'Products' | translate}}</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box">
+    <div class="box-header">
+      <!-- <h3 class="box-title">{{'Products List' | translate}}</h3> -->
+      <div class="row pull-right">
+        <button class="btn btn-primary mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="!isFiltersEnabled && productsList.length>0 ">
+          <i class="fa fa-filter" aria-hidden="true"></i>
+          &nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;
+        <button class="btn btn-warning mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="isFiltersEnabled && productsList.length>0 ">
+          <i class="fa fa-filter" aria-hidden="true"></i>&nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;   
+        <button class="btn btn-primary mt-3 mb-0" (click)="onAddProduct()" *ngIf="userActivityRights.CanManageProducts"> {{'Add Product' | translate}}</button>&nbsp;&nbsp;
+        <button class="btn btn-primary mt-3 mb-0" data-toggle="tooltip" data-toggle="modal" data-target="#bulkUpload" *ngIf="userActivityRights.CanManageProducts"> {{'Bulk Upload' | translate}}</button>
+      </div>
+      <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-clip-rotate">
+        <p style="font-size: 20px; color: white">Loading Please Wait...</p>
+      </ngx-spinner>
+    </div>
+    <div class="box-body">
+      <div class="table-responsive table-md mb-3">
+        <p-table #pd [value]="productsList" [paginator]="true" [rows]="10" sortMode="single"  >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 100px;">{{'Product Image' | translate}}</th>
+              <th [pSortableColumn]="'Name1'">{{'Name' | translate}}
+                <p-sortIcon [field]="Name1"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Description1'">{{'Description' | translate}}
+                <p-sortIcon [field]="Description1"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'CategoryName'">{{'Category' | translate}}
+                <p-sortIcon [field]="CategoryName"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Price'" style="width: 150px;">{{'Price' | translate}}
+                <p-sortIcon [field]="Price"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'DiscountedPrice'" style="width: 150px;">{{'Discount Price' | translate}}
+                <p-sortIcon [field]="DiscountedPrice"></p-sortIcon>
+              </th> 
+              <th style="width: 80px;">{{'Actions' | translate}}</th>             
+            </tr>
+            <tr *ngIf="isFiltersEnabled">  
+              <th></th>           
+              <th>
+                <input type="text" class="form-control"
+                  (input)="pd.filter($event.target.value, 'Name1', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control"
+                  (input)="pd.filter($event.target.value, 'Description1', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control"
+                  (input)="pd.filter($event.target.value, 'CategoryName', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="pd.filter($event.target.value, 'Price', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="pd.filter($event.target.value, 'DiscountedPrice', 'contains')">
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-product >
+            <tr>
+              <td align="center" style="width: 100px;">
+                <img src="{{product.Filepath}}" class="profile-image" style="width: 40px; height: 30px;"
+                  (click)="productImage(product.Filepath)" class="img-responsive"
+                  style="width: 40px; height: 30px;" />
+              </td>
+              <td>{{product.Name1}}</td>
+              <td>{{product.Description1}}</td>
+              <td>{{product.CategoryName}}</td>
+              <td style="width: 150px;">{{product.Price | number : '1.2-2'}}</td>
+              <td style="width: 150px;">{{product.DiscountedPrice | number : '1.2-2'}}</td>
+              <td style="width: 80px !important;" class="text-center">
+                <button type="button" class="btn btn-primary btn-xs" *ngIf="userActivityRights.CanManageProducts" title="{{'Edit'|translate}}" data-toggle="tooltip" (click)="onEditProduct(product)">
+                <i class="fa fa-edit"></i></button>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+              <td colspan="7" class="ui-datatable-emptymessage text-center">{{'No Records Found' | translate}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="content" *ngIf="addProduct">
+<div class="box">
+  <div class="box-header">
+      <h3 class="box-title">{{'Add Product' | translate}}</h3>
+  </div>
+  <div class="box-body">
+    <form [formGroup]="addProductForm">
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="exampleInputEmail1"> {{'Category' | translate}}</label>
+          <select class="form-control select2" formControlName="category">
+            <option [value]="null" selected="selected" disabled> {{'Please Select Category' | translate}}</option>
+            <option [value]="category.Id" *ngFor="let category of categoriesList">{{category.Name1}}</option>
+            <div *ngIf="!addProductForm.controls.category.valid && addProductForm.controls.category.touched" class="text-red">
+              <div *ngIf="addProductForm.get('category').errors.required"> {{'Select Category' | translate}}</div>
+            </div>
+          </select>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="exampleInputEmail1">{{'Product Name 1 (In English)' | translate}} <span class="text-red">*</span></label>
+          <input type="text" class="form-control" formControlName="name1" id="exampleInputEmail1" placeholder="{{'Product Name 1' | translate}}" maxlength="100">
+          <div *ngIf="!addProductForm.controls.name1.valid && addProductForm.controls.name1.touched" class="text-red">
+            <div *ngIf="addProductForm.get('name1').errors.required"> {{'Name 1 is required' | translate}}</div>
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="exampleInputEmail1">{{'Product Name 2 (In Arabic)' | translate}} <span class="text-red">*</span></label>
+          <input type="text" class="form-control" formControlName="name2" id="exampleInputEmail1" placeholder="{{'Product Name 2' | translate}}" maxlength="100">
+          <div *ngIf="!addProductForm.controls.name2.valid && addProductForm.controls.name2.touched" class="text-red">
+            <div *ngIf="addProductForm.get('name2').errors.required"> {{'Name 2 is required' | translate}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="exampleInputEmail1">{{'Code' | translate}} <span class="text-red">*</span></label>
+          <input type="text" class="form-control" formControlName="code" id="exampleInputEmail1" placeholder="{{'Code' | translate}}" (keypress)="numbersOnly($event)" maxlength="10">
+          <div *ngIf="!addProductForm.controls.code.valid && addProductForm.controls.code.touched" class="text-red">
+            <div *ngIf="addProductForm.get('code').errors.required"> {{'Code is required' | translate}}</div>
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="exampleInputEmail1">{{'Price' | translate}} <span class="text-red">*</span></label>
+          <input type="text" class="form-control" formControlName="price" id="exampleInputEmail1" placeholder="{{'Price' | translate}}" (keypress)="numberOnly($event)">
+          <div *ngIf="!addProductForm.controls.price.valid && addProductForm.controls.price.touched" class="text-red">
+            <div *ngIf="addProductForm.get('price').errors.required"> {{'Price is required' | translate}}</div>
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="exampleInputEmail1">{{'Discounted Price' | translate}}</label>
+          <input type="text" class="form-control" formControlName="discountedPrice" id="exampleInputEmail1" placeholder="{{'Discounted Price' | translate}}" (keypress)="numberOnly($event)">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-4">
+          <label for="exampleInputEmail1">{{'Description 1 (In English)' | translate}} <span class="text-red">*</span></label>
+          <textarea type="text" class="form-control" formControlName="description1" id="exampleInputEmail1" maxlength="1000"
+            placeholder="{{'Description 1' | translate}}"></textarea>
+          <div *ngIf="!addProductForm.controls.description1.valid && addProductForm.controls.description1.touched"
+            class="text-red">
+            <div *ngIf="addProductForm.get('description1').errors.required"> {{'Description 1 is required' | translate}}</div>
+          </div>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="exampleInputEmail1">{{'Description 2 (In Arabic)' | translate}} <span class="text-red">*</span></label>
+          <textarea type="text" class="form-control" formControlName="description2" id="exampleInputEmail1" maxlength="1000"
+            placeholder="{{'Description 2' | translate}}"></textarea>
+          <div *ngIf="!addProductForm.controls.description2.valid && addProductForm.controls.description2.touched"
+            class="text-red">
+            <div *ngIf="addProductForm.get('description2').errors.required"> {{'Description 2 is required' | translate}}</div>
+          </div>
+        </div>
+        <div class="form-group col-md-4 mat-form-field">
+          <label for="file">{{'Product Image'|translate}} <span class="text-red">*</span></label>
+          <input #fileInput type="file" class="form-control" id="file" formControlName="file"
+            (change)="onSelectFiles($event)">
+        </div>
+        <div class="clearfix"></div>
+        <div class="form-group col-md-4 mat-form-field" *ngIf="image !=null">
+          <div class="file-uploded">
+            <a target="_blank">
+              <img [src]="image" class="img-responsive box-shadow " style="height:150px;">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="row pull-right">
+        <button type="button" class="btn btn-danger" (click)="onCancelAddProduct()"> {{'Cancel' | translate}}</button>&nbsp;
+        <button type="button" class="btn btn-success" (click)="onSaveProduct()" [disabled]="!addProductForm.valid  || !validfile">{{'Save' | translate}}</button>&nbsp;&nbsp;
+    </div>
+    </form>
+  </div>
+</div>
+</section>
+<section class="content" *ngIf="editProduct">
+  <div class="box">
+    <div class="box-header">
+        <h3 class="box-title">{{'Edit Product' | translate}}</h3>
+    </div>
+    <div class="box-body">
+      <form [formGroup]="editProductForm">
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1"> {{'Category' | translate}}</label>
+            <select class="form-control select2" formControlName="category" [ngModel]="rowEdit?.CategoryId">
+              <option [value]="null" selected="selected" disabled> {{'Please Select Category' | translate}}</option>
+              <option [value]="category.Id" *ngFor="let category of categoriesList">{{category.Name1}}</option>
+              <div *ngIf="!editProductForm.controls.category.valid && editProductForm.controls.category.touched" class="text-red">
+                <div *ngIf="editProductForm.get('category').errors.required"> {{'Select Category' | translate}}</div>
+              </div>
+            </select>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Product Name 1 (In English)' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="name1" id="exampleInputEmail1" placeholder="{{'Product Name 1' | translate}}" [ngModel]="rowEdit?.Name1" maxlength="100"> 
+            <div *ngIf="!editProductForm.controls.name1.valid && editProductForm.controls.name1.touched" class="text-red">
+              <div *ngIf="editProductForm.get('name1').errors.required"> {{'Name 1 is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Product Name 2 (In Arabic)' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="name2" id="exampleInputEmail1" placeholder="{{'Product Name 2' | translate}}" [ngModel]="rowEdit?.Name2"  maxlength="100">
+            <div *ngIf="!editProductForm.controls.name2.valid && editProductForm.controls.name2.touched" class="text-red">
+              <div *ngIf="editProductForm.get('name2').errors.required"> {{'Name 2 is required' | translate}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Code' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="code" id="exampleInputEmail1" placeholder="{{'Code' | translate}}" [ngModel]="rowEdit?.Code" maxlength="10" (keypress)="numbersOnly($event)">
+            <div *ngIf="!editProductForm.controls.code.valid && editProductForm.controls.code.touched" class="text-red">
+              <div *ngIf="editProductForm.get('code').errors.required"> {{'Code is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Price' | translate}} <span class="text-red">*</span></label>
+            <input type="text" class="form-control" formControlName="price" id="exampleInputEmail1" placeholder="{{'Price' | translate}}" [ngModel]="rowEdit?.Price" (keypress)="numberOnly($event)">
+            <div *ngIf="!editProductForm.controls.price.valid && editProductForm.controls.price.touched" class="text-red">
+              <div *ngIf="editProductForm.get('price').errors.required"> {{'Price is required' | translate}}</div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Discounted Price' | translate}}</label>
+            <input type="text" class="form-control" formControlName="discountedPrice" id="exampleInputEmail1" placeholder="{{'Discounted Price' | translate}}" [ngModel]="rowEdit?.DiscountedPrice" (keypress)="numberOnly($event)">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Description 1 (In English)' | translate}} <span class="text-red">*</span></label>
+            <textarea type="text" class="form-control" formControlName="description1" id="exampleInputEmail1"
+              [ngModel]="rowEdit?.Description1" maxlength="1000" placeholder="{{'Description 1' | translate}}"></textarea>
+            <div *ngIf="!editProductForm.controls.description1.valid && editProductForm.controls.description1.touched"
+              class="text-red">
+              <div *ngIf="editProductForm.get('description1').errors.required"> {{'Description 1 is required' | translate}}
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="exampleInputEmail1">{{'Description 2 (In Arabic)' | translate}} <span class="text-red">*</span></label>
+            <textarea type="text" class="form-control" formControlName="description2" id="exampleInputEmail1"
+              [ngModel]="rowEdit?.Description2" maxlength="1000" placeholder="{{'Description 2' | translate}}"></textarea>
+            <div *ngIf="!editProductForm.controls.description2.valid && editProductForm.controls.description2.touched"
+              class="text-red">
+              <div *ngIf="editProductForm.get('description2').errors.required"> {{'Description 2 is required' | translate}}
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-4 mat-form-field">
+            <label for="file">Product Image <span class="text-red">*</span></label>
+            <input #fileInput1 type="file" class="form-control" id="file" formControlName="file"
+              (change)="onEditSelectFiles($event)">
+          </div>
+          <div class="clearfix"></div>
+          <div class="form-group col-md-4 mat-form-field" *ngIf="image1 !=null">
+            <!-- <div class="col-md-3 mb-4"> -->
+            <div class="file-uploded">
+              <a target="_blank">
+                <img [src]="image1" class="img-responsive box-shadow " style="height:150px;">
+              </a>
+            </div>
+            <!-- </div> -->
+          </div>
+          <div class="form-group col-md-4 mat-form-field" *ngIf="image1 ==null">
+            <!-- <div class="col-md-3 mb-4"> -->
+            <div class="file-uploded">
+              <a target="_blank">
+                <img [src]="rowEdit.Filepath" class="img-responsive box-shadow" style="height:150px;">
+              </a>
+            </div>
+            <!-- </div> -->
+          </div>
+        </div>
+        <div class="row pull-right">
+          <button type="button" class="btn btn-danger" (click)="onCancelEditProduct()"> {{'Cancel' | translate}}</button>&nbsp;
+          <button type="button" class="btn btn-success" (click)="onUpdateProduct()" [disabled]="!editProductForm.valid|| !editProductForm.dirty || !validfile">{{'Update' | translate}}</button>&nbsp;&nbsp;
+      </div>
+      </form>
+    </div>
+  </div>
+  </section>
+<div>
+  <div id="productModal" class="modal">
+    <span style="color: white;" class="close" (click)="closeImage()">&times;</span>
+    <img class="modal-content" [src]="modalImg" id="productImage">
+    <div id="caption"></div>
+  </div>
+</div>
+
+<div class="modal fade" id="bulkUpload">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onCancelClick()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">{{'BUlk Upload' | translate}}</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="uploadForm">
+          <div class="form-group">
+            <label for="email"> {{'File Upload' | translate}}</label>
+            <input type="file" class="form-control" formControlName="file" (change)="onFileSelect($event)" #fileInput2 />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="row pull-right">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onCancelClick()"> {{'Cancel' | translate}}</button>&nbsp;
+            <button type="button" class="btn btn-success" (click)="onUploadClick()" [disabled]="!uploadForm.valid || !validUploadfile"> {{'Upload' | translate}}</button>&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,498 @@
+<section class="content">
+  <div class="row">
+    <h3 class="pull-left"> {{'Users' | translate}}</h3>
+    <div class="breadcrumb pull-right">
+      <div class="container-fluid">
+        <div class="row">
+          <ol class="breadcrumb">
+            <li>
+              <i class="fa fa-home" aria-hidden="true"></i>
+            </li>
+            <li class="active">
+              <span>{{'Users' | translate}}</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box">
+    <div class="box-header">
+      <!-- <h3 class="box-title">{{'Users List' | translate}}</h3> -->
+      <div class="row pull-right">
+        <button class="btn btn-primary mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="!isFiltersEnabled && usersList.length>0">
+          <i class="fa fa-filter" aria-hidden="true"></i>
+          &nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;
+        <button class="btn btn-warning mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="isFiltersEnabled && usersList.length>0">
+          <i class="fa fa-filter" aria-hidden="true"></i>&nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;
+        <button class="btn btn-primary mt-3 mb-0" data-toggle="modal" (click)="onAddClick()" data-target="#adduser"
+          *ngIf="userActivityRights.CanManageUsers">{{'Add
+            User' | translate}}</button>
+      </div>
+      <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-clip-rotate">
+        <p style="font-size: 20px; color: white">Loading Please Wait...</p>
+      </ngx-spinner>
+    </div>
+    <div class="box-body">
+      <div class="table-responsive mb-3 table-md">
+        <p-table #rs [value]="usersList" [paginator]="true" [rows]="10" sortMode="single" rowExpandMode="single"
+          expandableRows="true" dataKey="Id">
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'FullName'">{{'Full Name' | translate}}
+                <p-sortIcon [field]="FullName"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'UserName'">{{'User Name' | translate}}
+                <p-sortIcon [field]="UserName"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'RoleName'">{{'Role Name' | translate}}
+                <p-sortIcon [field]="RoleName"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'ContactNumber'">{{'Contact Number' | translate}}
+                <p-sortIcon [field]="ContactNumber"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Email'">{{'Email' | translate}}
+                <p-sortIcon [field]="Email"></p-sortIcon>
+              </th>
+              <th>{{'Active' | translate}}</th>
+              <th style="width: 140px;">{{'Actions' | translate}}</th>
+            </tr>
+            <tr *ngIf="isFiltersEnabled">
+              <th></th>
+              <th>
+                <input type="text" class="form-control"
+                  (input)="rs.filter($event.target.value, 'FullName', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control"
+                  (input)="rs.filter($event.target.value, 'UserName', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control"
+                  (input)="rs.filter($event.target.value, 'RoleName', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control"
+                  (input)="rs.filter($event.target.value, 'ContactNumber', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="rs.filter($event.target.value, 'Email', 'contains')">
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-role let-expanded="expanded">
+            <tr>
+              <td>{{role.FullName}}</td>
+              <td>{{role.UserName}}</td>
+              <td>{{role.RoleName}}</td>
+              <td>{{role.ContactNumber}}</td>
+              <td style="word-break: break-all !important;">{{role.Email}}</td>
+              <td>{{role.IsActive}}</td>
+              <td style="text-align: center;" *ngIf="userActivityRights.CanManageUsers">
+                <button type="button" class="btn btn-primary btn-xs" title="{{'Edit'|translate}}" data-toggle="tooltip" *ngIf="role.RoleId != userRole"
+                  data-toggle="modal" data-target="#edituser" (click)="onEditClikc(role)">
+                  <i class="fa fa-edit"></i></button>&nbsp;
+                <!-- <button type="button" class="btn btn-danger btn-xs" title="Delete" data-toggle="tooltip">
+                    <i class="fa fa-trash"></i></button>&nbsp; -->
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+              <td colspan="7" class="ui-datatable-emptymessage text-center">{{'No Records Found' | translate}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="adduser">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)=onCancelAddUser()>
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">{{'Add New User' | translate}}</h4>
+      </div>
+      <div class="col-md-12">
+        <div class="modal-body">
+          <form [formGroup]="addUserForm">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'First Name' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="FirstName" maxlength="50"
+                    id="exampleInputEmail1" placeholder="{{'First Name' | translate}}">
+                  <div *ngIf="!addUserForm.controls.FirstName.valid && addUserForm.controls.FirstName.touched"
+                    class="text-red">
+                    <div *ngIf="addUserForm.get('FirstName').errors.required">{{'First Name is required' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Middle Name' | translate}}</label>
+                  <input type="text" class="form-control" formControlName="MiddleName" maxlength="50"
+                    id="exampleInputEmail1" placeholder="{{'Middle Name' | translate}}">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Last Name' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="LastName" maxlength="50"
+                    id="exampleInputEmail1" placeholder="{{'Last Name' | translate}}">
+                  <div *ngIf="!addUserForm.controls.LastName.valid && addUserForm.controls.LastName.touched"
+                    class="text-red">
+                    <div *ngIf="addUserForm.get('LastName').errors.required">{{'Last Name is required' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'User Name' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="UserName" maxlength="30"
+                    id="exampleInputEmail1" placeholder="{{'User Name' | translate}}">
+                  <div *ngIf="!addUserForm.controls.UserName.valid && addUserForm.controls.UserName.touched"
+                    class="text-red">
+                    <div *ngIf="addUserForm.get('UserName').errors.required">{{'User Name is required' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Password' | translate}} <span class="text-red">*</span></label>
+                  <input type="password" class="form-control" formControlName="Password" maxlength="30" id="exampleInputEmail1"
+                    placeholder="{{'Password' | translate}}">
+                  <div *ngIf="!addUserForm.controls.Password.valid && addUserForm.controls.Password.touched" class="text-red">
+                    <div *ngIf="addUserForm.get('Password').errors.required">{{'Password is required' | translate}}
+                    </div>
+                    <div *ngIf="addPassword.errors?.minlength">{{'Minimum of 6 characters' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Conform Password' | translate}} <span class="text-red">*</span></label>
+                  <input type="password" class="form-control" formControlName="ConformPassword" maxlength="30"
+                    id="exampleInputEmail1" placeholder="{{'Conform Password' | translate}}">
+                  <div
+                    *ngIf="!addUserForm.controls.ConformPassword.valid && addUserForm.controls.ConformPassword.touched"
+                    class="text-red">
+                    <div *ngIf="addUserForm.get('ConformPassword').errors.required">
+                      {{'Confirm Password is required' | translate}}</div>
+                  </div>
+                  <div class="text-red" *ngIf="addUserForm.controls.ConformPassword.errors?.mustMatch">{{'Password not
+                      match' | translate}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Email' | translate}}</label>
+                  <input type="text" class="form-control" formControlName="Email" maxlength="50" id="exampleInputEmail1"
+                    placeholder="{{'Email' | translate}}">
+                  <span class="text-red" *ngIf="addUserForm.controls['Email'].hasError('pattern')">
+                    {{'Please enter valid Email' | translate}}
+                  </span>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Contact Number' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="ContactNumber"
+                    (keypress)="numberOnly($event)" maxlength="13" id="exampleInputEmail1"
+                    placeholder="{{'Contact Number' | translate}}">
+                  <div *ngIf="!addUserForm.controls.ContactNumber.valid && addUserForm.controls.ContactNumber.touched"
+                    class="text-red">
+                    <div *ngIf="addUserForm.get('ContactNumber').errors.required">
+                      {{'Contact Number is required' | translate}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Role' | translate}} <span class="text-red">*</span></label>
+                  <select class="form-control select2" formControlName="Role" [(ngModel)]="selectRoles">
+                    <option [value]=null selected="selected" disabled>{{'Please Select Role' | translate}}</option>
+                    <option *ngFor="let list of rolesList" [value]="list.Id">{{list.NAME}}
+                    </option>
+                  </select>
+                  <div *ngIf="!addUserForm.controls.Role.valid && addUserForm.controls.Role.touched"
+                    class="text-red">
+                    <div *ngIf="addUserForm.get('Role').errors.required">{{'Role is required' | translate}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Manager' | translate}}</label>
+                  <select class="form-control select2" formControlName="Manager" [(ngModel)]="selectManager">
+                    <option [value]=null selected="selected" disabled>{{'Please Select Manager' | translate}}</option>
+                    <option *ngFor="let list of usersList" [value]="list.Id">{{list.FullName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Select Store' | translate}} <span class="text-red">*</span></label>
+                  <angular2-multiselect [data]="storesList" [(ngModel)]="selectedStores" formControlName="stores"
+                    [settings]="dropdownSettings"></angular2-multiselect>
+                  <div *ngIf="!addUserForm.controls.stores.valid && addUserForm.controls.stores.touched"
+                    class="text-red">
+                    <div *ngIf="addUserForm.get('stores').errors.required">{{'Store is required' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Address' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="Address" maxlength="100"
+                    id="exampleInputEmail1" placeholder="{{'Address' | translate}}">
+                  <div *ngIf="!addUserForm.controls.Address.valid && addUserForm.controls.Address.touched"
+                    class="text-red">
+                    <div *ngIf="addUserForm.get('Address').errors.required">{{'Address is required' | translate}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <input type="checkbox" name="vehicle1" formControlName="IsActive" value="IsActive"
+                    checked>{{'Is Active' | translate}}<br>
+                  <!-- <input type="checkbox" name="vehicle1" formControlName="IsActive" value="IsActive" checked> Is
+                    Active<br> -->
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="row pull-right">
+          <button type="button" class="btn btn-danger" data-dismiss="modal"
+            (click)="onCancelAddUser()">{{'Cancel' | translate}}</button>&nbsp;
+          <button type="button" class="btn btn-success" [disabled]="!addUserForm.valid"
+            (click)="onSaveUser()">{{'Save' | translate}}</button>&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="edituser">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)=onEditCancle()>
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">{{'Edit User' | translate}}</h4>
+      </div>
+      <div class="col-md-12">
+        <div class="modal-body">
+          <form [formGroup]="editUserForm">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'First Name' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="FirstName" maxlength="50"
+                    [(ngModel)]="rowdata.FirstName" id="exampleInputEmail1" placeholder="{{'First Name' | translate}}">
+                  <div *ngIf="!editUserForm.controls.FirstName.valid && editUserForm.controls.FirstName.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('FirstName').errors.required">{{'First Name is required' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Middle Name' | translate}}</label>
+                  <input type="text" class="form-control" formControlName="MiddleName" maxlength="50"
+                    [(ngModel)]="rowdata.MiddleName" id="exampleInputEmail1"
+                    placeholder="{{'Middle Name' | translate}}">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Last Name' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="LastName" maxlength="50"
+                    [(ngModel)]="rowdata.LastName" id="exampleInputEmail1" placeholder="{{'Last Name' | translate}}">
+                  <div *ngIf="!editUserForm.controls.LastName.valid && editUserForm.controls.LastName.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('LastName').errors.required">{{'Last Name is required' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'User Name' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="UserName" maxlength="30"
+                    [(ngModel)]="rowdata.UserName" id="exampleInputEmail1" placeholder="{{'User Name' | translate}}">
+                  <div *ngIf="!editUserForm.controls.UserName.valid && editUserForm.controls.UserName.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('UserName').errors.required">{{'User Name is required' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Password' | translate}} <span class="text-red">*</span></label>
+                  <input type="password" class="form-control" formControlName="Password" minLength="6" maxlength="30"
+                    [(ngModel)]="rowdata.Password" id="exampleInputEmail1" placeholder="{{'Password' | translate}}">
+                  <div *ngIf="!editUserForm.controls.Password.valid && editUserForm.controls.Password.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('Password').errors.required">{{'Password is required' | translate}}
+                    </div>
+                    <div *ngIf="editPassword.errors?.minlength">{{'Minimum of 6 characters' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Conform Password' | translate}} <span class="text-red">*</span></label>
+                  <input type="password" class="form-control" formControlName="ConformPassword" maxlength="30"
+                    [(ngModel)]="rowdata.Password" id="exampleInputEmail1"
+                    placeholder="{{'Conform Password' | translate}}">
+                  <div
+                    *ngIf="!editUserForm.controls.ConformPassword.valid && editUserForm.controls.ConformPassword.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('ConformPassword').errors.required">
+                      {{'Confirm Password is required' | translate}}</div>
+                  </div>
+                  <div class="text-red" *ngIf="editUserForm.controls.ConformPassword.errors?.mustMatch">{{'Password not
+                      match' | translate}}</div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Email' | translate}}</label>
+                  <input type="text" class="form-control" formControlName="Email" maxlength="50"
+                    [(ngModel)]="rowdata.Email" id="exampleInputEmail1" placeholder="{{'Email' | translate}}">
+                  <span class="text-red" *ngIf="editUserForm.controls['Email'].hasError('pattern')">
+                    {{'Please enter valid Email' | translate}}
+                  </span>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Contact Number' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="ContactNumber"
+                    (keypress)="numberOnly($event)" maxlength="13" id="exampleInputEmail1"
+                    placeholder="{{'Contact Number' | translate}}" [(ngModel)]="rowdata.ContactNumber">
+                  <div *ngIf="!editUserForm.controls.ContactNumber.valid && editUserForm.controls.ContactNumber.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('ContactNumber').errors.required">
+                      {{'Contact Number is required' | translate}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Role' | translate}} <span class="text-red">*</span></label>
+                  <select class="form-control select2" formControlName="Role" [(ngModel)]="rowdata.RoleId">
+                    <option [value]=null selected="selected" disabled>{{'Please Select Role' | translate}}</option>
+                    <option *ngFor="let list of rolesList" [value]="list.Id">{{list.NAME}}
+                    </option>
+                  </select>
+                  <div *ngIf="!editUserForm.controls.Role.valid && editUserForm.controls.Role.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('Role').errors.required">{{'Role is required' | translate}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Manager' | translate}}</label>
+                  <select class="form-control select2" formControlName="Manager" [(ngModel)]="rowdata.ManagerId">
+                    <option [value]=null selected="selected" disabled>{{'Please Select Manager' | translate}}</option>
+                    <option *ngFor="let list of usersList" [value]="list.Id">{{list.FullName}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Select Store' | translate}} <span class="text-red">*</span></label>
+                  <angular2-multiselect [data]="storesList" [(ngModel)]="selectedStores" formControlName="stores"
+                    [settings]="dropdownSettings"></angular2-multiselect>
+                  <div *ngIf="!editUserForm.controls.stores.valid && editUserForm.controls.stores.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('stores').errors.required">{{'Store is required' | translate}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">{{'Address' | translate}} <span class="text-red">*</span></label>
+                  <input type="text" class="form-control" formControlName="Address" maxlength="100"
+                    [(ngModel)]="rowdata.Address" id="exampleInputEmail1" placeholder="{{'Address' | translate}}">
+                  <div *ngIf="!editUserForm.controls.Address.valid && editUserForm.controls.Address.touched"
+                    class="text-red">
+                    <div *ngIf="editUserForm.get('Address').errors.required">{{'Address is required' | translate}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <input type="checkbox" name="vehicle1" formControlName="IsActive" checked
+                    [(ngModel)]="rowdata.IsActive" value="IsActive"> {{'Is
+                    Active' | translate}}<br>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="row pull-right">
+          <button type="button" class="btn btn-danger" data-dismiss="modal"
+            (click)="onEditCancle()">{{'Cancel' | translate}}</button>&nbsp;
+          <button type="button" class="btn btn-success" [disabled]="!editUserForm.valid || !editUserForm.dirty || selectedStores.length==0"
+            (click)="onUpdateUser()">{{'Update' | translate}}</button>&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

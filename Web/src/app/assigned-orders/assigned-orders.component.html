@@ -1,0 +1,336 @@
+<section class="content">
+  <div class="row">
+    <h3 class="pull-left"> {{'Assigned Orders' | translate}}</h3>
+    <div class="breadcrumb pull-right">
+      <div class="container-fluid">
+        <div class="row">
+          <ol class="breadcrumb">
+            <li>
+              <i class="fa fa-home" aria-hidden="true"></i>
+            </li>
+            <li class="active">
+              <span>{{'Assigned Orders' | translate}}</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box">
+    <div class="box-header">
+      <!-- <h3 class="box-title">{{'Assigned Orders List' | translate}}</h3> -->
+      <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-clip-rotate">
+          <p style="font-size: 20px; color: white">Loading Please Wait...</p>
+      </ngx-spinner>
+    </div>
+    <div class="box-body">
+      <div class="row">
+        <div class="form-group col-xs-12 col-md-5 pull-left">
+          <label class="control-label">{{'Store'|translate}}</label>
+          <select class="form-control select2" [(ngModel)]="storeId">
+            <option [value]=null selected="selected">All Stores</option>
+            <option [value]="store.StoreId" *ngFor="let store of userStoresList">{{store.Name1}}</option>
+          </select>
+        </div>
+        <div class="form-group col-xs-12 col-md-2">
+          <label class="control-label">{{'From Date'|translate}}</label>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right" id="datepicker" [max]="today">            
+            </div>
+        </div>
+        <div class="form-group col-xs-12 col-md-2">
+          <label class="control-label">{{'To Date'|translate}}</label>
+            <div class="input-group date">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right" id="datepicker1" [max]="today">            
+            </div>
+        </div>
+        <div class="form-group col-xs-12 col-md-2">
+          <label class="control-label">{{'Status'|translate}}</label>
+          <select class="form-control select2" [(ngModel)]="statusId">
+            <option [value]=null selected="selected">All Status</option>
+            <option [value]="store.TypeCdId" *ngFor="let store of orderStoresList">{{store.Desc}}</option>
+          </select>
+        </div>
+        <div class="form-group col-xs-12 col-md-1 mt-24">
+          <button type="button" class="btn btn-primary btn-md" (click)="onSearchClick()">{{'Search' | translate}}</button>
+        </div>
+      </div>
+      <div class="row pull-right mb-1">
+        <button class="btn btn-primary mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="!isFiltersEnabled && ordersList.length>0">
+          <i class="fa fa-filter" aria-hidden="true"></i>
+          &nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;
+        <button class="btn btn-warning mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="isFiltersEnabled && ordersList.length>0">
+          <i class="fa fa-filter" aria-hidden="true"></i>&nbsp;{{ filterTooltip | translate}} 
+        </button>
+      </div>
+      <div class="clearfix"></div>
+      <div class="table-responsive mb-3 table-xl">
+        <p-table #or [value]="ordersList" [paginator]="true" [rows]="10" sortMode="single" rowExpandMode="single" expandableRows="true"
+        dataKey="Id">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 2rem !important;"></th>
+              <th [pSortableColumn]="'Code'" style="word-break: break-all;width: 150px !important;"> {{'Code' | translate}}
+                <p-sortIcon [field]="Code"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'StoreName1'" style="width: 150px !important;"> {{'Store Name' | translate}}
+                <p-sortIcon [field]="StoreName1"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'CustomerName'" style="width: 150px !important;"> {{'Customer Name' | translate}}
+                <p-sortIcon [field]="CustomerName"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'CustomerContactNumber'" style="width: 150px !important;"> {{'Contact Number' | translate}}
+                <p-sortIcon [field]="CustomerContactNumber"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'ShippingAddress'" style="width: 160px !important;"> {{'Shipping Address' | translate}}
+                <p-sortIcon [field]="ShippingAddress"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'TotalPrice'" style="width: 88px !important;"> {{'Total Price' | translate}}
+                <p-sortIcon [field]="TotalPrice"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'CreatedDate'" style="width: 130px !important;"> {{'Ordered Date' | translate}}
+                <p-sortIcon [field]="CreatedDate"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'DeliveryAgentName'" style="width: 150px !important;"> {{'Assigned To' | translate}}
+                <p-sortIcon [field]="DeliveryAgentName"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'DeliveryAgentContactNumber'" style="width: 150px !important;"> {{'Agent Contact Number' | translate}}
+                <p-sortIcon [field]="DeliveryAgentContactNumber"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'DeliveryDate'" style="width: 130px !important;"> {{'Delivery Date' | translate}}
+                <p-sortIcon [field]="DeliveryDate"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'TimeSlot'" style="width: 120px !important;"> {{'Time' | translate}}
+                <p-sortIcon [field]="TimeSlot"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Status'" style="width: 90px !important;"> {{'Status' | translate}}
+                <p-sortIcon [field]="Status"></p-sortIcon>
+              </th>
+              <th style="width: 120px;">{{'Actions' | translate}}</th>
+            </tr>
+            <tr *ngIf="isFiltersEnabled">
+              <th style="width: 2rem !important;"></th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'Code', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'StoreName1', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'CustomerName', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'CustomerContactNumber', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'ShippingAddress', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'TotalPrice', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'CreatedDate', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'DeliveryAgentName', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'DeliveryAgentContactNumber', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'DeliveryDate', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'TimeSlot', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control" (input)="or.filter($event.target.value, 'Status', 'contains')">
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-order let-expanded="expanded">
+            <tr>
+              <td style="width: 3em">
+                <a [pRowToggler]="order"
+                  (click)="getProductsDetailsByOrderId(order,expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right')">
+                  <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                </a>
+              </td>
+              <td style="word-break: break-all !important;width: 150px;">{{order.Code}}</td>
+              <td style="width: 150px;">{{order.StoreName1}}</td>
+              <td style="width: 150px !important;">{{order.CustomerName}}</td>
+              <td style="width: 150px !important;">{{order.CustomerContactNumber}}</td>
+              <td style="width: 160px !important;">{{order.ShippingAddress}}</td>
+              <td style="width: 115px !important;">{{order.TotalPrice| number : '1.2-2'}}</td>
+              <td style="width: 130px !important;">{{order.CreatedDate | date : 'dd/MM/yyyy'}}</td>
+              <td style="width: 130px !important;">{{order.DeliveryAgentName}}</td>
+              <td style="width: 150px !important;">{{order.DeliveryAgentContactNumber}}</td>
+              <td style="width: 130px !important;">{{order.DeliveryDate | date : 'dd/MM/yyyy'}}</td>
+              <td style="width: 120px !important;">{{order.TimeSlot}}</td>
+              <td style="width: 90px !important;">{{order.Status}}</td>
+              <td style="width: 120px !important;">
+                <button type="button" class="btn btn-primary btn-xs" title="Update Delivery Status" data-toggle="tooltip"
+                  data-toggle="modal" data-target="#updateDeliveryStatus"
+                  (click)="updateDeliveryStatus(order)" *ngIf="userActivityRights.CanMakeOrderDelivered && order.StatusTypeId==orderStatus">
+                  <i class="fa fa-thumbs-up"></i></button>&nbsp;&nbsp;&nbsp;
+                  <button type="button" class="btn btn-danger btn-xs" title="Cancel Order" data-toggle="tooltip" data-toggle="modal" data-target="#cancelOrder"
+                  (click)="cancelOrder(order)" *ngIf="userActivityRights.CanCancelOrder && order.StatusTypeId!=orderSts">
+                  <i class="fa fa-times-circle"></i></button>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">
+              <tr>
+                  <td [attr.colspan]="14">
+                      <p-table #dt1 [responsive]="true" [value]="orderProductsList" [rows]="5" [paginator]="true" [rowsPerPageOptions]="[5,10,15]">
+                          <ng-template pTemplate="header">
+                              <tr>
+                                <th class="product-id" [pSortableColumn]="'Code'">Code
+                                  <p-sortIcon [field]="'Code'"></p-sortIcon>
+                                </th>
+                                <th class="product-id" [pSortableColumn]="'Name1'">Product Name
+                                  <p-sortIcon [field]="'Name1'"></p-sortIcon>
+                                </th>
+                                <th class="product-id" [pSortableColumn]="'Quantity'"> Quantity
+                                  <p-sortIcon [field]="'Quantity'"></p-sortIcon>
+                                </th>
+                                <th class="product-id" [pSortableColumn]="'Price'"> Price
+                                  <p-sortIcon [field]="'Price'"></p-sortIcon>
+                                </th>
+                                <th class="product-id" [pSortableColumn]="'TotalPrice'"> Total Price
+                                  <p-sortIcon [field]="'TotalPrice'"></p-sortIcon>
+                                </th>
+                              </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-expanded="expanded" let-rowdata>
+                              <tr>
+                                <td>{{rowdata.Code}}</td>
+                                <td>{{rowdata.Name1}}</td>
+                                <td>{{rowdata.Quantity}}</td>
+                                <td>{{rowdata.Price| number : '1.2-2'}}</td>
+                                <td>{{rowdata.TotalPrice| number : '1.2-2'}}</td>
+                              </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage" let-columns>
+                              <tr *ngIf="orderProductsList == 0">
+                                  <td colspan="5" class="ui-datatable-emptymessage text-center"> {{'No Records Found' | translate}}</td>
+                              </tr>
+                          </ng-template>
+                      </p-table>
+                  </td>
+              </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+              <td colspan="14" class="ui-datatable-emptymessage text-center">{{'No Records Found' | translate}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="updateDeliveryStatus">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onUpdateDeliveryCancel()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">{{'Update Delivery Status' | translate}}</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="deliveryStatusForm">
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Code' | translate}}</label>
+            <input type="text" class="form-control" formControlName="code" id="exampleInputEmail1" readonly [ngModel]="rowEdit?.Code">     
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Customer Name' | translate}}</label>
+            <input type="text" class="form-control" formControlName="CustomerName" id="exampleInputEmail1" readonly [ngModel]="rowEdit?.CustomerName">     
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Contact Number' | translate}}</label>
+            <input type="text" class="form-control" formControlName="CustomerContactNumber" id="exampleInputEmail1" readonly [ngModel]="rowEdit?.CustomerContactNumber">     
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1"> {{'Price' | translate}}</label>
+            <input type="text" class="form-control" formControlName="price" id="exampleInputEmail1" readonly [ngModel]="rowEdit?.TotalPrice">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1"> {{'Comments' | translate}}</label>
+            <textarea type="text" class="form-control" formControlName="comments" id="exampleInputEmail1"></textarea>
+            </div>
+          <!-- <div class="form-group">
+            <label for="exampleInputEmail1"> {{'Assign Delivery Agent' | translate}}</label>
+            <select class="form-control select2" formControlName="deliveryAgent" [(ngModel)]="user">
+              <option [value]=null selected="selected" disabled> {{'Please Select Delivery Agent' | translate}}</option>
+              <option [value]="user.Id" *ngFor="let user of usersList">{{user.FullName}}</option>
+            </select>
+          </div> -->
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="row pull-right">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onUpdateDeliveryCancel()"> {{'Cancel' | translate}}</button>&nbsp;
+            <button type="button" class="btn btn-success" (click)="updateOrderDeliveryStatus()" [disabled]="!deliveryStatusForm.valid || !deliveryStatusForm.dirty"> {{'Update' | translate}}</button>&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="cancelOrder">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onCloseClick()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">{{'Cancel Order' | translate}}</h4>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="cancelOrderForm">
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Code' | translate}}</label>
+            <input type="text" class="form-control" formControlName="code" id="exampleInputEmail1" readonly [ngModel]="ordDetails?.Code">     
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Customer Name' | translate}}</label>
+            <input type="text" class="form-control" formControlName="CustomerName" id="exampleInputEmail1" readonly [ngModel]="ordDetails?.CustomerName">     
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{'Contact Number' | translate}}</label>
+            <input type="text" class="form-control" formControlName="CustomerContactNumber" id="exampleInputEmail1" readonly [ngModel]="ordDetails?.CustomerContactNumber">     
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1"> {{'Price' | translate}}</label>
+            <input type="text" class="form-control" formControlName="price" id="exampleInputEmail1" readonly [ngModel]="ordDetails?.TotalPrice">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputEmail1"> {{'Comments' | translate}}</label>
+            <textarea type="text" class="form-control" formControlName="comments" id="exampleInputEmail1"></textarea>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="row pull-right">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="onCloseClick()"> {{'Close' | translate}}</button>&nbsp;
+            <button type="button" class="btn btn-success" (click)="onOrderCancel()" [disabled]="!cancelOrderForm.valid || !cancelOrderForm.dirty"> {{'Cancel Order' | translate}}</button>&nbsp;&nbsp;
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

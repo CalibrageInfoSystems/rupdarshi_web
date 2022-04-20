@@ -1,0 +1,237 @@
+
+<!-- Main content -->
+<section class="content">
+  <!-- Main row -->
+  <div class="row">
+    <!-- Left col -->
+    <div class="col-md-7">
+        <!-- MAP & BOX PANE -->
+        <div class="box box-success">
+          <div class="box-header with-border">
+            <h3 class="box-title">Project Details</h3>
+            <div class="box-tools pull-right">
+              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+          
+            <div class="box-body with-border">
+              <form class="form-horizontal" [formGroup]="projectForm">
+                <div class="form-group">
+                  <label for="projectName" class="col-sm-2 control-label order-md-1">Project Name</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control order-md-2" id="projectName" placeholder="Project Name"
+                      formControlName="projectName">
+                    <div *ngIf="!projectForm.controls.projectName.valid && isValid" class="text-danger">
+                      <div *ngIf="projectForm.get('projectName').errors.required">Project name is required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="contractNumber" class="col-sm-2 control-label">Contract Number</label>
+            
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="contractNumber" placeholder="Contract Number" formControlName="contractNumber">
+                    <div *ngIf="!projectForm.controls.contractNumber.valid && isValid" class="text-danger">
+                        <div *ngIf="projectForm.get('contractNumber').errors.required">Contract number is required</div>
+                      </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Consultant</label>
+                  <div class="col-sm-10">
+                    <select class="form-control select2" formControlName="consultant">
+                      <option [value]="" selected="selected">Please select a consultant</option>
+                      <!-- <option>Alabama</option>
+                      <option>Alaska</option>
+                      <option>California</option>
+                      <option>Delaware</option>
+                      <option>Tennessee</option>
+                      <option>Texas</option>
+                      <option>Washington</option> -->
+                      <option *ngFor="let u of this.consultantList; let j=index;">{{u.name}}</option>
+                    </select>
+                    <div *ngIf="!projectForm.controls.consultant.valid && isValid" class="text-danger">
+                        <div *ngIf="projectForm.get('consultant').errors.required">Consultant number is required</div>
+                      </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Contractor</label>
+                  <div class="col-sm-10">
+                    <select class="form-control select2" formControlName="contractor">
+                      <option selected="selected">Please select a contractor</option>
+                      <!-- <option>Alabama</option>
+                      <option>Alaska</option>
+                      <option>California</option>
+                      <option>Delaware</option>
+                      <option>Tennessee</option>
+                      <option>Texas</option>
+                      <option>Washington</option> -->
+                      <option *ngFor="let u of this.contractorList; let j=index;">{{u.name}}</option>
+                    </select>
+                    <div *ngIf="!projectForm.controls.consultant.valid && isValid" class="text-danger">
+                        <div *ngIf="projectForm.get('consultant').errors.required">Contractor number is required</div>
+                      </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inputEmail3" class="col-sm-2 control-label">Project Value</label>
+            
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputEmail3" placeholder="Project Value" formControlName="projectValue">
+                    <div *ngIf="!projectForm.controls.projectValue.valid && isValid" class="text-danger">
+                        <div *ngIf="projectForm.get('projectValue').errors.required">Project value is required</div>
+                      </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="firstBatch" class="col-sm-2 control-label">First batch</label>
+            
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="firstBatch" placeholder="First batch" formControlName="firstBatch">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Date</label>
+                  <div class="col-sm-10">
+                    <div class="input-group date">
+                      <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                      </div>
+                      <input type="text" class="form-control pull-right" id="datepicker" formControlName="date" [(ngModel)]="fromDate">            
+                    </div>
+                    <div *ngIf="!projectForm.controls.date.valid && isValid" class="text-danger">
+                        <div *ngIf="projectForm.get('date').errors.required">Date is required</div>
+                      </div>
+                  </div>
+            
+                  <!-- /.input group -->
+                </div>
+                <!-- <div class="form-group">
+                  <label>Color picker</label>
+                  <div><input type="text" class="form-control my-colorpicker1"></div>                
+                </div> -->
+                <div class="form-group">
+                  <label for="projectDuration" class="col-sm-2 control-label">Duration of the project</label>
+            
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputPassword3" placeholder="Duration of the project" formControlName="projectDuration">
+                    <div *ngIf="!projectForm.controls.projectDuration.valid && isValid" class="text-danger">
+                        <div *ngIf="projectForm.get('projectDuration').errors.required">Project duration is required</div>
+                      </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="budgetYear" class="col-sm-2 control-label">Budget year</label>
+            
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputPassword3" placeholder="Budget year" formControlName="budgetYear">
+                    <div *ngIf="!projectForm.controls.budgetYear.valid && isValid" class="text-danger">
+                        <div *ngIf="projectForm.get('budgetYear').errors.required">Budget year is required</div>
+                      </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Parent Project</label>
+                  <div class="col-sm-10">
+                    <select class="form-control select2" formControlName="parentProject">
+                      <option selected="selected">Select project type</option>
+                      <!-- <option>Independent Project</option>
+                      <option>Single Project</option> -->
+                      <option *ngFor="let p of this.projectsList; let i=index;">{{p.name}}</option>
+                    </select>
+                    <div *ngIf="!projectForm.controls.parentProject.valid && isValid" class="text-danger">
+                      <div *ngIf="projectForm.get('parentProject').errors.required">Parent project is required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Project Status</label>
+                  <div class="col-sm-10">
+                    <select class="form-control select2" formControlName="projectStatus">
+                      <option selected="selected">Please select a status</option>
+                      <option>Active</option>
+                      <option>In-Active</option>
+                    </select>
+                    <div *ngIf="!projectForm.controls.projectStatus.valid && isValid" class="text-danger">
+                        <div *ngIf="projectForm.get('projectStatus').errors.required">Project status is required</div>
+                      </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="box-body pad">
+                      <label class="col-sm-2 control-label">Project Description</label>
+                      <div class="col-sm-10">
+                          <ck-editor name="editor1" [(ngModel)]="editorValue" skin="moono-lisa" language="en" formControlName="projectDescriptin"></ck-editor>
+                      </div>
+                    
+                  </div>
+                </div>
+              </form>
+            
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+              <button type="submit" class="btn btn-default">Cancel</button>
+              <button type="submit" class="btn btn-info pull-right" (click)="onCreateProjectClick()">Submit</button>
+            </div>
+            <!-- /.box-footer -->
+        </div>
+      </div>
+    <!-- Right col -->
+    <div class="col-md-5">
+        <!-- MAP & BOX PANE -->
+        <div class="box box-success">
+          <div class="box-header with-border">
+            <h3 class="box-title">Project Location</h3>
+  
+            <div class="box-tools pull-right">
+              <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+              <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+            </div>
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body no-padding">
+            <div class="row">
+              <div class="col-md-9 col-sm-8">
+                <div class="pad">
+                  <!-- Map will be created here -->
+                  <div id="world-map-markers" style="height: 325px;"></div>
+                </div>
+              </div>
+              <!-- /.col -->
+              <div class="col-md-3 col-sm-4">
+                <div class="pad box-pane-right bg-red" style="min-height: 280px">
+                  <div class="description-block margin-bottom">
+                    <div class="sparkbar pad" data-color="#fff">90,70,90,70,75,80,70</div>
+                    <h5 class="description-header">8390</h5>
+                    <span class="description-text">Visits</span>
+                  </div>
+                  <!-- /.description-block -->
+                  <div class="description-block margin-bottom">
+                    <div class="sparkbar pad" data-color="#fff">90,50,90,70,61,83,63</div>
+                    <h5 class="description-header">30%</h5>
+                    <span class="description-text">Referrals</span>
+                  </div>
+                  <!-- /.description-block -->
+                  <div class="description-block">
+                    <div class="sparkbar pad" data-color="#fff">90,50,90,70,61,83,63</div>
+                    <h5 class="description-header">70%</h5>
+                    <span class="description-text">Organic</span>
+                  </div>
+                  <!-- /.description-block -->
+                </div>
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div>
+          <!-- /.box-body -->
+        </div>
+      </div>
+  </div>
+  <!-- /.row -->
+</section>

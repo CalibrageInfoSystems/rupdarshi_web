@@ -1,0 +1,353 @@
+
+<!-- Main content -->
+<section class="content">
+    <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Projects List</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+          <table id="projectDataTable" class="table direction table-bordered table-striped">
+            <thead>
+            <tr>
+              <th>ContractNumber</th>
+                <th>Project Name</th>
+                <th>Consultant</th>
+                <th>Contractor</th>
+                <th>Case</th>
+              <th>Control</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let project of projectsList">
+                  <td>{{project.id}}</td>
+                  <td>{{project.name}}</td>
+                  <td>{{project["consultant name"]}}</td>
+                  <td>{{project["contractor name"]}}</td>
+                  <td>Active</td>
+                  <td>
+                      <!-- <i class="fa fa-caret-down arowClass" aria-hidden="true"></i>&nbsp;&nbsp; -->
+                      <div class="dropdown">
+                          <i class="fa fa-tachometer dashboardClass" aria-hidden="true"></i>&nbsp;&nbsp;
+                          <i class="fa fa-pencil editClass" aria-hidden="true"></i>&nbsp;&nbsp;
+                          <i class="fa fa-bars barClass" aria-hidden="true"></i>&nbsp;&nbsp;
+                      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" style="margin-bottom: 7px;">
+                          <span class="fa fa-caret-down"></span></button>
+                          <ul class="dropdown-menu">
+                            <li><a routerLink="/request-for-inspection">Request for inspection</a></li>
+                            <li><a routerLink="/table-of-quantities">Table of quantities</a></li>
+                          </ul>
+                        </div>
+                      
+                  </td>
+                </tr>
+            </tbody>
+            <!-- <tfoot>
+            <tr>
+              <th>Rendering engine</th>
+              <th>Browser</th>
+              <th>Platform(s)</th>
+              <th>Engine version</th>
+              <th>CSS grade</th>
+            </tr>
+            </tfoot> -->
+          </table>
+        </div>
+        <!-- /.box-body -->
+      </div>
+</section>
+<!-- /Main content -->
+<div class="modal fade" id="inspection-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">Add Request</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" [formGroup]="inspectionForm">
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-2 control-label order-md-1">Order Number</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control order-md-2" id="orderNumber" placeholder="Order Number"
+                formControlName="orderNumber">
+              <div *ngIf="!inspectionForm.controls.orderNumber.valid && isValid" class="text-danger">
+                <div *ngIf="inspectionForm.get('orderNumber').errors.required">Order number is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Request Type</label>
+            <div class="col-sm-10">
+              <select class="form-control select2" formControlName="requestType">
+                <option value="" selected="selected" disabled>Please select a order type</option>
+                <option>Alabama</option>
+                <option>Alaska</option>
+                <option>California</option>
+                <option>Delaware</option>
+                <option>Tennessee</option>
+                <option>Texas</option>
+                <option>Washington</option>
+              </select>
+              <div *ngIf="!inspectionForm.controls.requestType.valid && isValid" class="text-danger">
+                <div *ngIf="inspectionForm.get('requestType').errors.required">Request type is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-2 control-label order-md-1"></label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control order-md-2" id="orderNumber" placeholder="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Work Site</label>
+            <div class="col-sm-10">
+              <select class="form-control select2" formControlName="workSite">
+                <option value="" selected="selected" disabled>Please select a work site</option>
+                <option>Alabama</option>
+                <option>Alaska</option>
+                <option>California</option>
+                <option>Delaware</option>
+                <option>Tennessee</option>
+                <option>Texas</option>
+                <option>Washington</option>
+              </select>
+              <div *ngIf="!inspectionForm.controls.workSite.valid && isValid" class="text-danger">
+                <div *ngIf="inspectionForm.get('workSite').errors.required">Work site is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Date of examination</label>
+            <div class="col-sm-10">
+              <div class="input-group date">
+                <div class="input-group-addon">
+                  <i class="fa fa-calendar"></i>
+                </div>
+                <input type="text" class="form-control pull-right" id="datepicker" formControlName="dateOfExamination"
+                  [(ngModel)]="dateOfExamination">
+              </div>
+              <div *ngIf="!inspectionForm.controls.dateOfExamination.valid && isValid" class="text-danger">
+                <div *ngIf="inspectionForm.get('dateOfExamination').errors.required">Date of examination is required
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Items</label>
+            <div class="col-sm-10">
+              <select class="form-control select2" formControlName="itemNumber">
+                <option value="" selected="selected" disabled>Please select item number</option>
+                <option>Alabama</option>
+                <option>Alaska</option>
+                <option>California</option>
+                <option>Delaware</option>
+                <option>Tennessee</option>
+                <option>Texas</option>
+                <option>Washington</option>
+              </select>
+              <div *ngIf="!inspectionForm.controls.itemNumber.valid && isValid" class="text-danger">
+                <div *ngIf="inspectionForm.get('itemNumber').errors.required">Item number is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-2 control-label order-md-1"></label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control order-md-2" id="orderNumber" placeholder="">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button> -->
+        <button type="button" class="btn btn-primary" (click)="onAddInspectionClick()">Add to list</button>
+        <br>
+        <br>
+        <h4 style="text-align:left">Items Added</h4>
+        <br>
+        <table id="inspection" class="table direction table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Item Number</th>
+              <th>Quantity</th>
+              <th>Control</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="3" style="text-align:center">No records found</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="quantities-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title">addition</h4>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" [formGroup]="quantityForm">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Main section Bawshar</label>
+            <div class="col-sm-9">
+              <select class="form-control select2" formControlName="mainSection">
+                <option value="" selected="selected" disabled>Please select Main section</option>
+                <option>Alabama</option>
+                <option>Alaska</option>
+                <option>California</option>
+                <option>Delaware</option>
+                <option>Tennessee</option>
+                <option>Texas</option>
+                <option>Washington</option>
+              </select>
+              <div *ngIf="!quantityForm.controls.mainSection.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('mainSection').errors.required">Main section is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">First Subsection</label>
+            <div class="col-sm-9">
+              <select class="form-control select2" formControlName="firstSubSection">
+                <option value="" selected="selected" disabled>Please select First Subsection</option>
+                <option>Alabama</option>
+                <option>Alaska</option>
+                <option>California</option>
+                <option>Delaware</option>
+                <option>Tennessee</option>
+                <option>Texas</option>
+                <option>Washington</option>
+              </select>
+              <div *ngIf="!quantityForm.controls.firstSubSection.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('firstSubSection').errors.required">First Subsection is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Second subsection</label>
+            <div class="col-sm-9">
+              <select class="form-control select2" formControlName="secondSubSection">
+                <option value="" selected="selected" disabled>Please select Second Subsection</option>
+                <option>Alabama</option>
+                <option>Alaska</option>
+                <option>California</option>
+                <option>Delaware</option>
+                <option>Tennessee</option>
+                <option>Texas</option>
+                <option>Washington</option>
+              </select>
+              <div *ngIf="!quantityForm.controls.secondSubSection.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('secondSubSection').errors.required">Second Subsection is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-3 control-label order-md-1">Item Number</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control order-md-3" id="orderNumber" placeholder="Item Number"
+                formControlName="itemNumber">
+              <div *ngIf="!quantityForm.controls.itemNumber.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('itemNumber').errors.required">Item number is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-3 control-label order-md-1">Item Name</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control order-md-3" id="orderNumber" placeholder="Item Name"
+                formControlName="itemName">
+              <div *ngIf="!quantityForm.controls.itemName.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('itemName').errors.required">Item name is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Session</label>
+            <div class="col-sm-9">
+              <select class="form-control select2" formControlName="session">
+                <option value="" selected="selected" disabled>Please select session</option>
+                <option>Alabama</option>
+                <option>Alaska</option>
+                <option>California</option>
+                <option>Delaware</option>
+                <option>Tennessee</option>
+                <option>Texas</option>
+                <option>Washington</option>
+              </select>
+              <div *ngIf="!quantityForm.controls.session.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('session').errors.required">session is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-3 control-label order-md-1">Item Description</label>
+            <div class="col-sm-9">
+              <textarea type="text" class="form-control order-md-2" rows="4" id="orderNumber"
+                placeholder="Item Description" formControlName="itemDescription"></textarea>
+              <div *ngIf="!quantityForm.controls.itemDescription.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('itemDescription').errors.required">Item name is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-3 control-label order-md-1">Unit</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control order-md-3" id="orderNumber" placeholder="Unit"
+                formControlName="unit">
+              <div *ngIf="!quantityForm.controls.unit.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('unit').errors.required">Unit is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-3 control-label order-md-1">Quantity of the contract</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control order-md-3" id="orderNumber" placeholder="Quantity of the contract"
+                formControlName="contractQuantity">
+              <div *ngIf="!quantityForm.controls.contractQuantity.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('contractQuantity').errors.required">Quantity of the contract is required
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-3 control-label order-md-1">Unit Price</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control order-md-3" id="orderNumber" placeholder="Unit Price"
+                formControlName="unitPrice">
+              <div *ngIf="!quantityForm.controls.unitPrice.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('unitPrice').errors.required">Unit price is required</div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="orderNumber" class="col-sm-3 control-label order-md-1">Total Price</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control order-md-3" id="orderNumber" placeholder="Total Price"
+                formControlName="totalPrice">
+              <div *ngIf="!quantityForm.controls.totalPrice.valid && isValid" class="text-danger">
+                <div *ngIf="quantityForm.get('totalPrice').errors.required">Total Price is required</div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="onAddTableQuantityClick()">addition</button>
+      </div>
+    </div>
+  </div>
+</div>

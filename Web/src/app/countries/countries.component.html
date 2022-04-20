@@ -1,0 +1,93 @@
+<section class="content">
+  <div class="row">
+    <h3 class="pull-left"> {{'Countries' | translate}}</h3>
+    <div class="breadcrumb pull-right">
+      <div class="container-fluid">
+        <div class="row">
+          <ol class="breadcrumb">
+            <li>
+              <i class="fa fa-home" aria-hidden="true"></i>
+            </li>
+            <li class="active">
+              <span>{{'Countries' | translate}}</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box">
+    <div class="box-header">     
+      <div class="row pull-right">
+        <button class="btn btn-primary mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="!isFiltersEnabled && countriesList.length>0 ">
+          <i class="fa fa-filter" aria-hidden="true"></i>
+          &nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;
+        <button class="btn btn-warning mt-3 mb-0" (click)="toggleFilter()"
+          *ngIf="isFiltersEnabled && countriesList.length>0">
+          <i class="fa fa-filter" aria-hidden="true"></i>&nbsp;{{filterTooltip | translate}}
+        </button>&nbsp;&nbsp;        
+      </div>
+      <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-clip-rotate">
+        <p style="font-size: 20px; color: white">Loading Please Wait...</p>
+      </ngx-spinner>
+    </div>
+    <div class="box-body">
+      <div class="table-responsive table-xs mb-3">
+        <p-table #cu [value]="countriesList" [paginator]="true" [rows]="10" sortMode="single" >
+          <ng-template pTemplate="header">
+            <tr>
+              <th [pSortableColumn]="'Name1'">{{'Full Name' | translate}}
+                <p-sortIcon [field]="Name1"></p-sortIcon>
+              </th>
+              <th [pSortableColumn]="'Code'">{{'Code' | translate}}
+                <p-sortIcon [field]="Code"></p-sortIcon>
+              </th> 
+              <th [pSortableColumn]="'IsActive'">{{'Active' | translate}}
+                <p-sortIcon [field]="IsActive"></p-sortIcon>
+              </th>                   
+             
+              <th [pSortableColumn]="'UpdatedDate'">{{'Updated Date' | translate}}
+                <p-sortIcon [field]="UpdatedDate"></p-sortIcon>
+              </th>             
+            </tr>
+            <tr *ngIf="isFiltersEnabled">
+             
+              <th>
+                <input type="text" class="form-control"
+                  (input)="cu.filter($event.target.value, 'Name1', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control"
+                  (input)="cu.filter($event.target.value, 'Code', 'contains')">
+              </th>
+              <th>
+                <input type="text" class="form-control"
+                  (input)="cu.filter($event.target.value, 'IsActive', 'contains')">
+              </th>             
+              
+              <th>
+                <input type="text" class="form-control" (input)="cu.filter($event.target.value, 'UpdatedDate', 'contains')">
+              </th>             
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-country >
+            <tr>
+              <td>{{country.Name1}}</td>
+              <td>{{country.Code}}</td>                         
+              <td>{{country.IsActive}}</td>  
+              <td>{{country.UpdatedDate| date:'dd/MM/yyyy'}}</td>           
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+              <td colspan="4" class="ui-datatable-emptymessage text-center">{{'No Records Found' | translate}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</section>
